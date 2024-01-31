@@ -1,8 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 var passport = require("passport");
-const connection = require('./config/database');
-const User = connection.models.User;
+const User = require('./models/userModel');
 const registrationRoutes = require('./routes/registration')
 var cors = require('cors')
 
@@ -33,11 +32,10 @@ require('./config/passport')
 // app.use(session({ secret: "123", resave: true, saveUninitialized: true, cookie: {maxAge: 60 * 60 * 24 * 1000} }));
 app.use(
   session({
-    //secret: process.env.SECRET,
-    secret: "some secret",
+    secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
-    store: MongoStore.create({ mongoUrl: "mongodb://127.0.0.1:27017/auth" }),
+    store: MongoStore.create({ mongoUrl: process.env.DB_STRING }),
   })
 );
 
@@ -63,5 +61,5 @@ app.use(passport.session());
  */
 
 // Server listens on http://localhost:9000
-app.listen(9000);
+app.listen(8888);
 
