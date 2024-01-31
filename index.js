@@ -3,6 +3,7 @@ const session = require("express-session");
 var passport = require("passport");
 const User = require('./models/userModel');
 const registrationRoutes = require('./routes/registration')
+const verifyEmailRoutes = require('./routes/verify')
 var cors = require('cors')
 
 // Package documentation - https://www.npmjs.com/package/connect-mongo
@@ -53,6 +54,7 @@ app.use(passport.session());
 
 
   app.use(registrationRoutes)
+  app.use('/verify' , verifyEmailRoutes)
 
 
 
@@ -60,6 +62,6 @@ app.use(passport.session());
  * -------------- SERVER ----------------
  */
 
-// Server listens on http://localhost:9000
+// Server listens on http://localhost:8888
 app.listen(8888);
 

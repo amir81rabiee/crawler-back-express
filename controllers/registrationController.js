@@ -2,50 +2,72 @@ const passport = require("passport");
 const User = require("../models/userModel");
 const genPassword = require("../utils/passwordUtils").genPassword;
 const credentials = require("../utils/checkCredentials");
+const sendVerificationEmail = require("../utils/sendVerificationEmail")
 const checkCredentials = credentials();
 function registrationController() {
   return {
     //Register new user
-    register: function (username, password, email, isAdmin, req, res) {
-      if (checkCredentials.checkUsername(username) == "BAD_USERNAME") {
-        return res.status(406).json({ message: "BAD_USERNAME" });
+    register: function (req, res) {
+      if (
+        !typeof(req.body.username) == "string" ||
+        !typeof(req.body.password) == "string" ||
+        !typeof(req.body.email) == "string" ||
+        !typeof(req.body.isAdmin) == "boolean" ||
+        !typeof(req.body.needVerifyEmail) == "boolean"
+      ){
+        return res.status(406).json({message:"Please fill the form"})
       }
-      if (checkCredentials.checkEmail(email) == "BAD_EMAIL") {
+        if (
+          checkCredentials.checkUsername(req.body.username) == "BAD_USERNAME"
+        ) {
+          return res.status(406).json({ message: "BAD_USERNAME" });
+        }
+      if (checkCredentials.checkEmail(req.body.email) == "BAD_EMAIL") {
         return res.status(406).json({ message: "BAD_EMAIL" });
       }
-      if (checkCredentials.checkPassword(password) == "BAD_PASSWORD") {
-
-        return res.status(406).json({ message: "BAD_PASSWORD" , pasword:password });
+      if (checkCredentials.checkPassword(req.body.password) == "BAD_PASSWORD") {
+        return res
+          .status(406)
+          .json({ message: "BAD_PASSWORD", pasword: req.body.password });
       } else {
-        const saltHash = genPassword(password);
+        if(req.body.needVerifyEmail){
+          sendVerificationEmail(req.body.email)
+        }
+        const saltHash = genPassword(req.body.password);
 
         const salt = saltHash.salt;
         const hash = saltHash.hash;
         const newUser = new User({
-          username: username,
-          email: email,
+          username: req.body.username,
+          email: req.body.email,
           hash: hash,
           salt: salt,
-          isAdmin: isAdmin,
+          isAdmin: req.body.isAdmin,
+          verifiedEmail: !req.body.needVerifyEmail,
         });
 
-        newUser.save().then((user) => {
-          req.logIn(user, () => {
-            res.redirect("/");
+        newUser
+          .save()
+          .then((user) => {
+            req.logIn(user, () => {
+              res.redirect("/");
+            });
+          })
+          .catch((err) => {
+            if (err.code == 11000) {
+              res
+                .status(406)
+                .json({ message: "Username or email already exist" });
+            }
           });
-        }).catch((err)=>{
-          if(err.code == 11000){
-            res.status(406).json({message:"Username or email already exist"})
-          }
-        });
       }
     },
 
     //check if user is authenticated
-    isAuthenticated: function (req, res , next) {
+    isAuthenticated: function (req, res, next) {
       if (req.isAuthenticated()) {
-        if(next){
-          return next()
+        if (next) {
+          return next();
         }
         res.status(202).json({ status: "authenticated" });
       } else {

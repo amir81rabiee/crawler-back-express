@@ -15,14 +15,14 @@ router.post("/login", passport.authenticate('local'), function(req, res) {
 });
 
 router.post("/register" ,registrationController.isAuthenticated, (req, res, next) => {
-  registrationController.register(req.body.username , req.body.password , req.body.email , req.body.isAdmin , req , res)
+  registrationController.register(req , res)
   // res.send("OK")
 });
 
 
 router.get("/isAuthenticated", (req, res, next) => {
   // This is how you check if a user is authenticated and protect a route.  You could turn this into a custom middleware to make it less redundant
-  registrationController.isAuthenticated(req ,res , next)
+  registrationController.isAuthenticated(req ,res)
 });
 
 // Visiting this route logs the user out
