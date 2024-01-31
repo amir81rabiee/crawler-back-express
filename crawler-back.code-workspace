@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../crawler-back"
+		},
+		{
+			"path": "../webcrawler_panel"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
