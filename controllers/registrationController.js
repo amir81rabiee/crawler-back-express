@@ -8,15 +8,6 @@ function registrationController() {
   return {
     //Register new user
     register: function (req, res) {
-      if (
-        !typeof(req.body.username) == "string" ||
-        !typeof(req.body.password) == "string" ||
-        !typeof(req.body.email) == "string" ||
-        !typeof(req.body.isAdmin) == "boolean" ||
-        !typeof(req.body.needVerifyEmail) == "boolean"
-      ){
-        return res.status(406).json({message:"Please fill the form"})
-      }
         if (
           checkCredentials.checkUsername(req.body.username) == "BAD_USERNAME"
         ) {
@@ -30,9 +21,9 @@ function registrationController() {
           .status(406)
           .json({ message: "BAD_PASSWORD", pasword: req.body.password });
       } else {
-        if(req.body.needVerifyEmail){
-          sendVerificationEmail(req.body.email)
-        }
+        // if(req.body.needVerifyEmail){
+        //   sendVerificationEmail(req.body.email)
+        // }
         const saltHash = genPassword(req.body.password);
 
         const salt = saltHash.salt;
@@ -44,15 +35,9 @@ function registrationController() {
           salt: salt,
           isAdmin: req.body.isAdmin,
           verifiedEmail: !req.body.needVerifyEmail,
+          userBandwith:req.body.userBandwith
         });
-
-        newUser
-          .save()
-          .then((user) => {
-            req.logIn(user, () => {
-              res.redirect("/");
-            });
-          })
+        newUser.save().then((user)=>{res.status(201).json({message:"USER_CREATED_SUCCESSFULLY"})})
           .catch((err) => {
             if (err.code == 11000) {
               res

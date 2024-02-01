@@ -7,8 +7,11 @@ const UserSchema = new mongoose.Schema({
     hash: String,
     salt: String,
     isAdmin: {type:Boolean ,  default: false},
-    verifiedEmail:Boolean
-});
+    verifiedEmail:Boolean,
+    crawlers:{type:Array , default:[]},
+    crawlsDone:{type:Number , default:0},
+    userBandwith:{type:Number , required:true}
+} , { timestamps: true });
 
 
 const User = connection.model('User', UserSchema);

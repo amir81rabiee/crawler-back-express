@@ -1,9 +1,12 @@
 const express = require("express");
 const session = require("express-session");
 var passport = require("passport");
-const User = require('./models/userModel');
+
+//Importing routes
 const registrationRoutes = require('./routes/registration')
 const verifyEmailRoutes = require('./routes/verify')
+const crawlersRoutes = require('./routes/crawlers')
+
 var cors = require('cors')
 
 // Package documentation - https://www.npmjs.com/package/connect-mongo
@@ -43,7 +46,10 @@ app.use(
 
 /**
  * -------------- PASSPORT AUTHENTICATION ----------------
+ * 
+ * 
  */
+
 
 
 app.use(passport.initialize());
@@ -56,6 +62,8 @@ app.use(passport.session());
 
   app.use(registrationRoutes)
   app.use('/verify' , verifyEmailRoutes)
+  app.use('/crawlers' , crawlersRoutes)
+
 
 
 

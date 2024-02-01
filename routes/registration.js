@@ -14,7 +14,7 @@ router.post("/login", passport.authenticate('local'), function(req, res) {
         res.status(202).json({validation:true , username:req.user.username})
 });
 
-router.post("/register" ,registrationController.isAuthenticated, (req, res, next) => {
+router.post("/register" , (req, res, next) => {
   registrationController.register(req , res)
   // res.send("OK")
 });
