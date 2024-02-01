@@ -16,7 +16,7 @@ router.post("/login", passport.authenticate('local'), function(req, res) {
 
 router.post("/register" , (req, res, next) => {
   registrationController.register(req , res)
-  // res.send("OK")
+  // res.json({message:"OK"})
 });
 
 

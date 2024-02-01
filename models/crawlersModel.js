@@ -5,11 +5,12 @@ const CrawlerSchema = new mongoose.Schema(
   {
     name: String,
     // uid: { unique: true, required: true, type: String },
-    staticURL: String,
-    dynamicURL: String,
+    staticAddress: String,
+    dynamicAddress: String,
     from: Number,
     to: Number,
-    repeat: Number,
+    count: Number,
+    script:String,
     doneCrawled: {type:Number , default:0},
     isCrawling: {type : Boolean , default:false}
   },
@@ -21,7 +22,7 @@ const CrawlerGroupSchema = new mongoose.Schema(
     groupName: String,
     parentID:String,
     // uid: { unique: true, required: true, type: String },
-    crawalers: [CrawlerSchema],
+    crawlers: [CrawlerSchema],
   },
   { timestamps: true }
 );

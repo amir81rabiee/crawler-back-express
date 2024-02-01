@@ -9,7 +9,7 @@ function crawlersController(){
                 const newCrawler = new Crawler({
                     groupName:req.body.groupName ,
                     parentID:user._id,
-                    crawalers:req.body.crawlersList
+                    crawlers:req.body.crawlersList
                 })
                 newCrawler.save()
                 .then((crawlerGruop)=>{

@@ -65,6 +65,10 @@ app.use(passport.session());
   app.use('/crawlers' , crawlersRoutes)
 
 
+  app.get('/' , (req , res)=>{
+    res.send('home')
+  })
+
 
 
 /**
