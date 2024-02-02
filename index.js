@@ -1,7 +1,11 @@
 const express = require("express");
 const session = require("express-session");
 var passport = require("passport");
+const puppeteer = require('./services/puppeteer')
+const scheduleJob = require('./services/schedule')
 
+
+puppeteer()
 //Importing routes
 const registrationRoutes = require('./routes/registration')
 const verifyEmailRoutes = require('./routes/verify')
@@ -63,7 +67,6 @@ app.use(passport.session());
   app.use(registrationRoutes)
   app.use('/verify' , verifyEmailRoutes)
   app.use('/crawlers' , crawlersRoutes)
-
 
   app.get('/' , (req , res)=>{
     res.send('home')

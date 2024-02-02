@@ -1,6 +1,5 @@
 const schedule = require('node-schedule');
-const job = schedule.scheduleJob('5 * * * * *', function(){
-    console.log('The answer to life, the universe, and everything!');
-  });
-
-  module.exports = job
+const scheduleJob = (cb)=>{
+const job = schedule.scheduleJob('5 * * * * *', cb)
+}
+  module.exports = scheduleJob
