@@ -10,7 +10,8 @@ const CrawlerSchema = new mongoose.Schema(
     from: Number,
     to: Number,
     count: Number,
-    script:String,
+    linkScript:String,
+    productPageScript:String,
     doneCrawled: {type:Number , default:0},
     isCrawling: {type : Boolean , default:false}
   },

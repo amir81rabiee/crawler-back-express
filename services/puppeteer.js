@@ -1,35 +1,53 @@
 const puppeteer = require("puppeteer");
+const Crawlers = require("../models/crawlersModel");
 
 const browser = async () => {
+  const crawlersList = await Crawlers.find();
   // Launch the browser and open a new blank page
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
-
-  // Navigate the page to a URL
-  await page.goto("https://kalatik.com/category/26/samsung");
-  await page.addScriptTag({ url: 'https://code.jquery.com/jquery-3.2.1.min.js' });
-  
-  var data = await page.evaluate(()=>{
-    var pr = []
-    function toEnglishNumber(strNum) {
-        var pn = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-        var en = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
-        var an = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
-        var cache = strNum;
-        for (var i = 0; i < 10; i++) {
-            var regex_fa = new RegExp(pn[i], 'g');
-            var regex_ar = new RegExp(an[i], 'g');
-            cache = cache.replace(regex_fa, en[i]);
-            cache = cache.replace(regex_ar, en[i]);
-        }
-        return cache;
+  await page.addScriptTag({
+    url: "https://code.jquery.com/jquery-3.2.1.min.js",
+  });
+  for (
+    let crawlersListPosition = 0;
+    crawlersListPosition < crawlersList.length;
+    crawlersListPosition++
+  ) {
+    for (
+      let crawlerPosition = 0;
+      crawlerPosition < crawlersList[crawlersListPosition].crawlers.length;
+      crawlerPosition++
+    ) {
+      var crawler =
+        crawlersList[crawlersListPosition].crawlers[crawlerPosition];
+      for (let i = crawler.from; i <= crawler.to; i++) {
+        await page.goto(
+          crawler.staticAddress + crawler.dynamicAddress.replace("*", i),
+          { waitUntil: "domcontentloaded" }
+        );
+        let linkScript = crawler.linkScript
+        console.log(
+          await page.evaluate((linkScript) => {
+            var urls = [];
+            eval("$('.product-list-cont .item-cont .item-image .lnk-image').each((idx, el) => {   const selectedProduct = $(el);   let url = selectedProduct.attr('href').trim();    urls.push(url); }) ");
+            return urls;
+          })
+        );
+      }
     }
-    // ... give time for script to load, then type (or see below for non wait option)
-    var divPrice = $('.product-list-cont .item-cont .item-content .item-price-outer .item-price-inner .item-price-value')
-    divPrice.each(function(index){pr.push(parseFloat(toEnglishNumber($(this).text().replace(',', '').replace(',', '').replace('تومان', '').trim())))})
-    return pr
-  })
-  console.log(data)
-  await browser.close();
+  }
+
+  // // Navigate the page to a URL
+  // await page.goto("https://kalatik.com/category/26/samsung");
+  // await page.addScriptTag({ url: 'https://code.jquery.com/jquery-3.2.1.min.js' });
+
+  // var data = await page.evaluate(()=>{
+
+  // })
+  // console.log(data)
+  // await browser.close();
+
+  // console.log(crawlersList)
 };
 module.exports = browser;

@@ -4,7 +4,6 @@ var passport = require("passport");
 const puppeteer = require('./services/puppeteer')
 const scheduleJob = require('./services/schedule')
 
-
 puppeteer()
 //Importing routes
 const registrationRoutes = require('./routes/registration')
