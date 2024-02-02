@@ -13,7 +13,8 @@ const CrawlerSchema = new mongoose.Schema(
     linkScript:String,
     productPageScript:String,
     doneCrawled: {type:Number , default:0},
-    isCrawling: {type : Boolean , default:false}
+    isCrawling: {type : Boolean , default:false},
+    data:{type : String , default:""}
   },
   { timestamps: true }
 );

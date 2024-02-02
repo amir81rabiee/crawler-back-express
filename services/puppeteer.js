@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const Crawlers = require("../models/crawlersModel");
+const mongoose = require("mongoose");
 
 const browser = async () => {
   const crawlersList = await Crawlers.find();
@@ -22,50 +23,46 @@ const browser = async () => {
     ) {
       var crawler =
         crawlersList[crawlersListPosition].crawlers[crawlerPosition];
-        
+
+        var urlArray = []
       for (let i = crawler.from; i <= crawler.to; i++) {
         await page.goto(
           crawler.staticAddress + crawler.dynamicAddress.replace("*", i),
-          { waitUntil: "domcontentloaded" }
+          { waitUntil: "domcontentloaded" ,timeout: 0 }
         );
         const linkCrawler =crawler.linkScript
-        
-         links.push({crawlerId:crawler._id.toString(), links: await page.evaluate((linkCrawler) => {
-          var urls =[]
-          eval(linkCrawler)
-          return urls;
-        } , linkCrawler)} )
-      }
-      
+          let res = await page.evaluate((linkCrawler) => {
+            var urls =[]
+            eval(linkCrawler)
+            return urls;
+          } , linkCrawler)
+          urlArray.push(...res)
+        }
+        links.push({crawlerGroupID:crawlersList[crawlersListPosition]._id.toString() , crawlerId:crawler._id.toString(), links:urlArray} )
+
     }
   }
-  let crawleddata = []
+  // console.log(links)
   for(let index = 0 ; index<links.length ; index++){
+    let crawledData = []
     for(let link = 0 ; link< links[index].links.length ; link++){
-      await page.goto(links[index].links[link])
+      await page.goto(links[index].links[link] , { waitUntil: "domcontentloaded" ,timeout: 0 })
       const dataCrawler =crawler.productPageScript
-      crawleddata.push({crawlerId:links[index].crawlerId, links: await page.evaluate((dataCrawler) => {
+      crawledData.push( await page.evaluate((dataCrawler) => {
         var productTitle = "" ; var image = [] ; var price = 0 ; var salesPrice = 0;var description ="" ;
         eval(dataCrawler)
         return {productTitle:productTitle , image:image , price:price , salesPrice:salesPrice , description:description};
-      } , dataCrawler)} )
+      } , dataCrawler) )
     }
+    const jsonString = JSON.stringify(crawledData) 
+    console.log(jsonString)
+    let newF = await Crawlers.findOneAndUpdate(
+      { _id:new mongoose.Types.ObjectId(links[index].crawlerGroupID) , "crawlers._id":new mongoose.Types.ObjectId(links[index].crawlerId)  },
+      { $set:{"crawlers.$.data": jsonString }}
+    );
+    console.log(newF)
+    newF.save()
   }
-  console.log(crawleddata)
 
-
-
-
-  // // Navigate the page to a URL
-  // await page.goto("https://kalatik.com/category/26/samsung");
-  // await page.addScriptTag({ url: 'https://code.jquery.com/jquery-3.2.1.min.js' });
-
-  // var data = await page.evaluate(()=>{
-
-  // })
-  // console.log(data)
-  // await browser.close();
-
-  // console.log(crawlersList)
 };
 module.exports = browser;
