@@ -1,16 +1,18 @@
 const express = require("express");
 const session = require("express-session");
 var passport = require("passport");
-const puppeteer = require('./services/puppeteer')
+// const puppeteer = require('./services/puppeteer')
 const scheduleJob = require('./services/schedule')
 
-puppeteer().catch((err)=>{
-  console.log(err)
-})
+// puppeteer().catch((err)=>{
+//   console.log(err)
+// })
 //Importing routes
 const registrationRoutes = require('./routes/registration')
 const verifyEmailRoutes = require('./routes/verify')
 const crawlersRoutes = require('./routes/crawlers')
+const apiRoutes = require('./routes/api')
+
 
 var cors = require('cors')
 
@@ -49,12 +51,12 @@ app.use(
   })
 );
 
-/**
- * -------------- PASSPORT AUTHENTICATION ----------------
- * 
- * 
- */
 
+//Disable caching (There is a problem with microsoft Edge's caching)
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store')
+  next()
+})
 
 
 app.use(passport.initialize());
@@ -68,6 +70,8 @@ app.use(passport.session());
   app.use(registrationRoutes)
   app.use('/verify' , verifyEmailRoutes)
   app.use('/crawlers' , crawlersRoutes)
+  app.use('/api' , apiRoutes)
+
 
   app.get('/' , (req , res)=>{
     res.send('home')
