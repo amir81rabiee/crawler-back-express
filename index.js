@@ -1,7 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 var passport = require("passport");
-// const puppeteer = require('./services/puppeteer')
+const puppeteer = require('./services/puppeteer')
 const scheduleJob = require('./services/schedule')
 
 // puppeteer().catch((err)=>{

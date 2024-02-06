@@ -23,7 +23,8 @@ const browser = async () => {
     ) {
       var crawler =
         crawlersList[crawlersListPosition].crawlers[crawlerPosition];
-
+        crawler.isCrawling = true
+        crawlersList[crawlersListPosition].save()
         var urlArray = []
       for (let i = crawler.from; i <= crawler.to; i++) {
         await page.goto(
@@ -55,13 +56,11 @@ const browser = async () => {
       } , dataCrawler) )
     }
     const jsonString = JSON.stringify(crawledData) 
-    console.log(jsonString)
-    let newF = await Crawlers.findOneAndUpdate(
+    let newRecord = await Crawlers.findOneAndUpdate(
       { _id:new mongoose.Types.ObjectId(links[index].crawlerGroupID) , "crawlers._id":new mongoose.Types.ObjectId(links[index].crawlerId)  },
-      { $set:{"crawlers.$.data": jsonString }}
+      { $set:{"crawlers.$.data": jsonString,"crawlers.$.isCrawling": false }}
     );
-    console.log(newF)
-    newF.save()
+    newRecord.save()
   }
 
 };

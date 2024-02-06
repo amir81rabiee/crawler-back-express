@@ -13,4 +13,7 @@ router.get('/crawlers_list' , (req , res)=>{
 router.post('/new_crawler' , (req , res)=>{
     crawlersController.creatNewCrawler(req , res)
 })
+router.delete("/:crawlersGroupID/:crawlerID?" , (req, res)=>{
+    crawlersController.deleteCrawler(req , res)
+})
 module.exports = router
